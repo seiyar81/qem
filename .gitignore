@@ -1,0 +1,11 @@
+# Build directories
+build/*
+
+# User files
+*.user*
+*.suo
+*.sdf
+*.ncb
+
+# Submodules
+tests/unittest-cpp

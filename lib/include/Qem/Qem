@@ -1,0 +1,17 @@
+#ifndef QEM_GLOBAL_INCLUDES
+#define QEM_GLOBAL_INCLUDES
+
+// std includes
+#include <map>
+#include <cassert>
+#include <string>
+#include <vector>
+
+// Qce includes
+#include "qem_assert.h"
+#include "qem_agency.h"
+#include "qem_bitfield.h"
+#include "pp.h"
+#include "qem.h"
+
+#endif // QEM_GLOBAL_INCLUDES
