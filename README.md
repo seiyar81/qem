@@ -10,7 +10,11 @@ Qem is meant to provide an easy way of writing and working with models, but with
 
 The idea behind Qem is simple : you create a model, you write some data in it, and then you watch it.
 
-# Building qem
+# Building Qem
+
+Clone this repository : 
+	git clone git://github.com/seiyar81/qem.git
+	cd qem
 
 Qem uses CMake so : 
 	mkdir build
