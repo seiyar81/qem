@@ -1,7 +1,6 @@
 @import url(https://fonts.googleapis.com/css?family=Lato:300italic,700italic,300,700);
 
 body {
-  padding:50px;
   font:14px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
   color:#777;
   font-weight:300;
@@ -48,6 +47,7 @@ a small {
 
 .wrapper {
   width:860px;
+  padding:50px;
   margin:0 auto;
 }
 
@@ -94,6 +94,52 @@ th {
 
 img {
   max-width:100%;
+}
+
+nav {
+	width: 100%;
+}
+
+nav ul {
+  list-style:none;
+  height:50px;
+  
+  padding:0;
+  
+  background: #eee;
+  background: -moz-linear-gradient(top, #f8f8f8 0%, #dddddd 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f8f8f8), color-stop(100%,#dddddd));
+  background: -webkit-linear-gradient(top, #f8f8f8 0%,#dddddd 100%);
+  background: -o-linear-gradient(top, #f8f8f8 0%,#dddddd 100%);
+  background: -ms-linear-gradient(top, #f8f8f8 0%,#dddddd 100%);
+  background: linear-gradient(top, #f8f8f8 0%,#dddddd 100%);
+  
+  border-radius:5px;
+  border:1px solid #d2d2d2;
+  box-shadow:inset #fff 0 1px 0, inset rgba(0,0,0,0.03) 0 -1px 0;
+  width:860px;
+  margin: 0 auto;
+}
+
+nav li {
+  float:left;
+  padding: 10px 15px;
+  border-right:1px solid #d2d2d2;
+  height:40px;
+}
+
+nav ul a {
+  line-height:1;
+  font-size:16px;
+  color:#999;
+  display:block;
+  text-align:center;
+  padding-top:6px;
+  height:40px;
+}
+
+nav ul a:hover {
+  text-shadow: black;
 }
 
 header {

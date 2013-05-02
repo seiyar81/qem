@@ -1,0 +1,35 @@
+<h2>How does it work ?</h2>
+
+<h3>Macros</h3>
+<p>
+	Qem mainly uses macros to provide a easy way of writing models.<br />
+	
+	This is great for providing developer-friendly and easy to use features, but it raises a few problems : <br />
+	<ul>
+		<li>Auto-completion in your IDE, some work has been done to improve that point, and it should work fine now in most IDE</li>
+		<li>Qt's MOC preprocessor doesn't expand macros and as it is the point of Qem it's kind of a big deal !</li>
+	</ul>
+	The solution to this is for Qem to have his own preprocessor generator.<br />
+</p>
+	
+<h3>qemPreProc</h3>
+<p>
+	qemPreproc is a simple tool that you need to call (there is also a CMake macro to ease your pain ;) ) <br />
+	the header files which contains QEM macros.<br /><br />
+	
+	This tool will generate empty class definitions with the needed signals to give MOC the expanded versions of our macros.<br />
+	
+	You can call the tool manually : <br />
+	<code>
+		qcePreProc [-o&lt;outputFile&gt;] &lt;inputFile&gt;<br />
+	</code>
+</p>
+
+<h3>Ids</h3>
+<p>
+A model must be declarated with a defined set of members, each defined with a name and a metatype.<br />
+An agency is then used to create and/or delete models.<br />
+But you cannot directly access a model object, only its id.<br />
+
+You will use this id to create the following workers : Reader, Writer, Watcher.
+</p>
