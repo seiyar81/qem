@@ -5,7 +5,7 @@ Title['/about'] = 'Qem - About';
 Title['/doc'] = 'Qem - Documentation';
 Title['/downloads'] = 'Qem - Downloads';
 
-var Pages = new Array('home', 'about', 'doc', 'downloads');
+var Pages = new Array('about', 'doc', 'downloads', 'home');
 
 function onPageLoad(id)
 {
@@ -78,6 +78,8 @@ $(document).ready(function()
 				// trés important : désactivation du clic du lien a
 				return false;
 			});
+			
+			$("#nav-home").click();
 		}
 	}
 );
