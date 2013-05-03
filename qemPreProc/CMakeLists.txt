@@ -5,9 +5,27 @@ project(qemPreproc)
 #---------------------------------------------------------------------------$
 #                             QT - Variables
 #---------------------------------------------------------------------------$
-find_package(Qt4 4.8.1 COMPONENTS QtCore REQUIRED)
+# We try to locate Qt5 first
+find_package( Qt5Core QUIET )
+if(Qt5Core_FOUND)
 
-include(${QT_USE_FILE})
+	message("Building qemPreProc against Qt5Core")
+
+	include_directories(${Qt5Core_INCLUDE_DIRS})
+	add_definitions(${Qt5Core_DEFINITIONS})
+
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Core_EXECUTABLE_COMPILE_FLAGS}")
+
+	set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+	set(QT_LIBRARIES ${Qt5Core_LIBRARIES})
+
+else()
+
+	find_package(Qt4 4.8.1 COMPONENTS QtCore REQUIRED)
+	include(${QT_USE_FILE})
+
+endif()
 
 #------------------------------------------------------------------------------
 #                             INCLUDE DIRECTORIES

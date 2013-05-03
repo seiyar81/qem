@@ -210,7 +210,7 @@ int runPreProc(int _argc, char **_argv)
             case 'o':
                 if (opt[1])
                 {
-					qemOutputFile = opt.mid(1);
+					qemOutputFile = opt.mid(1).split('=').last();
                 }
                 break;
             case 'h':

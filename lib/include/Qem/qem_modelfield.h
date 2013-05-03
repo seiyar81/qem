@@ -1,9 +1,6 @@
 #ifndef MODEL_FIELD_H_INCLUDED
 #define MODEL_FIELD_H_INCLUDED
 
-#include <cassert>
-#include <QtCore/QtGlobal>
-
 #ifdef QEM_DEBUG
 #include <QDebug>
 #include <iostream>

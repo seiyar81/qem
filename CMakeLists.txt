@@ -13,48 +13,67 @@ include(QemWrapCpp.cmake)
 #---------------------------------------------------------------------------$
 #                             QT - Variables
 #---------------------------------------------------------------------------$
-find_package(Qt4 4.8.1 COMPONENTS QtCore REQUIRED)
 
-include(${QT_USE_FILE})
+# We try to locate Qt5 first
+find_package( Qt5Core QUIET )
+if(Qt5Core_FOUND)
 
-IF(NOT QEM_BUILD_TYPE)
-	SET(QEM_BUILD_TYPE STATIC)
-ENDIF()
+	message("Building Qem against Qt5Core")
 
-IF(${CMAKE_BUILD_TYPE} MATCHES Debug)
-	ADD_DEFINITIONS(-DQEM_DEBUG=1)
-ELSE()
-	ADD_DEFINITIONS(-DQEM_DEBUG=0)
-ENDIF()
+	include_directories(${Qt5Core_INCLUDE_DIRS})
+	add_definitions(${Qt5Core_DEFINITIONS})
+	
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Core_EXECUTABLE_COMPILE_FLAGS}")
 
-IF(APPLE)
-	OPTION(OSX_FRAMEWORK "Build a Mac OS X Framework")
-	SET(FRAMEWORK_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/Library/Frameworks"
+	set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+	set(QT_LIBRARIES ${Qt5Core_LIBRARIES})
+
+else()
+
+	find_package(Qt4 4.8.1 COMPONENTS QtCore REQUIRED)
+	include(${QT_USE_FILE})
+
+endif()
+
+if(NOT QEM_BUILD_TYPE)
+	set(QEM_BUILD_TYPE STATIC)
+endif()
+
+if(${CMAKE_BUILD_TYPE} MATCHES Debug)
+	add_definitions(-DQEM_DEBUG=1)
+else()
+	add_definitions(-DQEM_DEBUG=0)
+endif()
+
+if(APPLE)
+	option(OSX_FRAMEWORK "Build a Mac OS X Framework")
+	set(FRAMEWORK_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/Library/Frameworks"
 		CACHE PATH "Where to place qem.framework if OSX_FRAMEWORK is selected")
-ENDIF()
+endif()
 
 #------------------------------------------------------------------------------
 #                             INCLUDE DIRECTORIES
 #------------------------------------------------------------------------------
 
-SET(qem_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lib/include" CACHE STRING "QtEventableModels include directory")
-SET(LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib" CACHE STRING "Directory where the library will be installed")
-SET(CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/cmake/${CMAKE_PROJECT_NAME}" CACHE PATH "Directory where to install QemWrapCpp.cmake")
-SET(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include/" CACHE PATH "Directory where to install qem includes")
+set(qem_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lib/include" CACHE STRING "QtEventableModels include directory")
+set(LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib" CACHE STRING "Directory where the library will be installed")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/cmake/${CMAKE_PROJECT_NAME}" CACHE PATH "Directory where to install QemWrapCpp.cmake")
+set(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include/" CACHE PATH "Directory where to install qem includes")
 
 include_directories(
 	${PROJECT_SOURCE_DIR}/lib
 	${PROJECT_SOURCE_DIR}/lib/include
 )
 
-SET(SOURCES
+set(SOURCES
 	lib/src/qem.cpp
 	lib/src/qem_modelfield.cpp
 	lib/src/qem_agency.cpp
 	lib/src/qem_assert.cpp
 )
 
-SET(HEADERS
+set(HEADERS
 	lib/include/Qem/qem.h
 	lib/include/Qem/qem_agency.h
 	lib/include/Qem/qem_modelfield.h
@@ -63,7 +82,7 @@ SET(HEADERS
 	lib/include/Qem/pp.h
 )
 
-SET(PUBLIC_HEADERS
+set(PUBLIC_HEADERS
 	${HEADERS}
 	lib/include/Qem/Qem
 )
@@ -76,7 +95,7 @@ add_subdirectory( qemPreProc )
 
 if(NOT QEMPreProcBin)
 		get_property(QEMPreProcBin TARGET qemPreproc PROPERTY LOCATION)
-ENDIF()
+endif()
 
 #------------------------------------------------------------------------------
 #                                LIBRARY
@@ -98,31 +117,31 @@ set_target_properties(qem PROPERTIES
 	PUBLIC_HEADER "${PUBLIC_HEADERS}"
 )
 
-IF(APPLE)
+if(APPLE)
 	set_target_properties(qem PROPERTIES
 		FRAMEWORK ${OSX_FRAMEWORK}
 	)
-ENDIF()
+endif()
 
 target_link_libraries(qem
 	${QT_LIBRARIES}
 )
 
-INSTALL( TARGETS qem
+install( TARGETS qem
 	RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
 	LIBRARY DESTINATION ${LIB_INSTALL_DIR}
 	ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
 	PUBLIC_HEADER DESTINATION ${INCLUDE_INSTALL_DIR}/Qem
 )
 
-INSTALL(FILES QemWrapCpp.cmake
+install(FILES QemWrapCpp.cmake
 				DESTINATION "${CMAKECONFIG_INSTALL_DIR}")
 
 #------------------------------------------------------------------------------
 #                                TESTS
 #------------------------------------------------------------------------------
 
-IF(WITH_TESTS)
+if(WITH_TESTS)
 	add_subdirectory( tests )
-ENDIF()
+endif()
 

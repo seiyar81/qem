@@ -7,9 +7,26 @@ include(../QemWrapCpp.cmake)
 #---------------------------------------------------------------------------$
 #                             QT - Variables
 #---------------------------------------------------------------------------$
-find_package(Qt4 4.8.1 COMPONENTS QtCore REQUIRED)
 
-include(${QT_USE_FILE})
+# We try to locate Qt5 first
+find_package( Qt5Core QUIET )
+if(Qt5Core_FOUND)
+
+	message("Building Qem tests against Qt5Core")
+
+	include_directories(${Qt5Core_INCLUDE_DIRS})
+	add_definitions(${Qt5Core_DEFINITIONS})
+
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Core_EXECUTABLE_COMPILE_FLAGS}")
+
+	set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+	set(QT_LIBRARIES ${Qt5Core_LIBRARIES})
+
+else()
+	find_package(Qt4 4.8.1 COMPONENTS QtCore REQUIRED)
+	include(${QT_USE_FILE})
+endif()
 
 #------------------------------------------------------------------------------
 #                             INCLUDE DIRECTORIES
@@ -23,28 +40,32 @@ include_directories(
 	${qem_INCLUDE_DIR}
 )
 
-SET(SOURCES
+set(SOURCES
 	main.cpp
 )
 
-SET(HEADERS
+set(HEADERS
         fixtures.h
         watcher.h
 )
 
-SET(MOC_HEADERS
+set(MOC_HEADERS
         watcher.h
 )
 
-SET(QEM_HEADERS
+set(QEM_HEADERS
         fixtures.h
 )
 
 #------------------------------------------------------------------------------
 #                                Qt MACROS
 #------------------------------------------------------------------------------
-qem_wrap_cpp(QEM_OUTFILES ${PROJECT_BINARY_DIR} ${QEM_HEADERS})
-qt4_wrap_cpp(MOC_OUTFILES ${MOC_HEADERS})
+qem_wrap_cpp(QEM_OUTFILES ${PROJECT_BINARY_DIR} ${Qt5Core_FOUND} ${QEM_HEADERS})
+
+if(NOT Qt5Core_FOUND)
+	qt4_wrap_cpp(MOC_OUTFILES ${MOC_HEADERS})
+endif()
+
 #------------------------------------------------------------------------------
 #                                LIBRARY
 #------------------------------------------------------------------------------
