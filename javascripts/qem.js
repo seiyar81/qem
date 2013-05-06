@@ -38,10 +38,12 @@ function pageload(hash)
 		{
 			$.ajax({ type: "GET", url: hash.substring(1, hash.length)+'.html', 
 				success: function(data){
-					$("#section").html(data);
 					$.jCache.setItem(hash, data);
-					document.title = Title[hash];
-					onPageLoad(hash);
+					if(hash == "/home")
+					{
+						$("#section").html(data);
+						document.title = Title[hash];
+					}
 				},
 				error: function(){
 					$.historyLoad('/404');
@@ -78,8 +80,6 @@ $(document).ready(function()
 				// trés important : désactivation du clic du lien a
 				return false;
 			});
-			
-			$("#nav-home").click();
 		}
 	}
 );
@@ -90,6 +90,6 @@ function preLoadPages()
 	for (i=0; i<Pages.length; i++) 
 	{
 		var hash = "/"+Pages[i];
-		pageload(hash)
+		pageload(hash);
 	}
 }
