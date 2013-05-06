@@ -1,5 +1,194 @@
 <h2>Qem documentation</h2>
 
+<ul>
+	<li><a href="#build">Build</a></li>
+	<li><a href="#macros">Macros</a></li>
+	<li><a href="#use">In use</a></li>
+	<li><a href="#cmake">CMake</a></li>
+	<li><a href="#os">OS</a></li>
+</ul>
+
+
+<h3 id="build">Building Qem</h3>
 <p>
-Coming next ...
+	Clone this repository : <br />
+	<pre>
+		<code>
+git clone git://github.com/seiyar81/qem.git
+		</code>
+	</pre>
+
+	Qem uses CMake so : <br />
+	<pre>
+		<code>
+mkdir build
+cd build
+cmake ../qem
+make
+sudo make install
+		</code>
+	</pre>
+
+	Build & Run tests : <br />
+	<pre>
+		<code>
+-DWITH_TESTS=1
+		</code>
+	</pre>
+
+	Build type, STATIC by default : <br />
+	<pre>
+		<code>
+-DQEM_BUILD_TYPE=STATIC
+or
+-DQEM_BUILD_TYPE=SHARED
+		</code>
+	</pre>
+	
+	Replace make with mingw32-make or nmake given your target OS.
 </p>
+
+<h3 id="macros">Qem macros</h3>
+<p>
+<h4>Declaring a metatype</h4>
+
+Qem provide a unique macro for that : <em>QEM_MODEL_FIELD</em>
+
+With basic types : 
+<pre>
+	<code>
+QEM_MODEL_FIELD(int, int)
+QEM_MODEL_FIELD(unsigned long, ulong)
+QEM_MODEL_FIELD(bool, bool)
+	</code>
+</pre>
+With std types : 
+<pre>
+	<code>
+QEM_MODEL_FIELD(std::string, string)
+QEM_MODEL_FIELD(std::vector&lt;int&gt;, vectorInt)
+	</code>
+</pre>
+
+With Qt types : 
+<pre>
+	<code>
+QEM_MODEL_FIELD(QString, qString)	
+	</code>
+</pre>
+
+<h4>Declaring a model</h4>
+
+Qem provides the following macro <em>QEM_MODEL</em>.
+
+It's easy to use : 
+<pre>
+	<code>
+QEM_MODEL(TestModel, 3,
+	(Id,		int),
+	(Name,		qString),
+	(BirthDate,	ulong)
+)
+	</code>
+</pre>
+
+Always take three arguments : the model name, the member count, the members list.<br />
+Each model member is declarated by specifiying a name and a metatype as previously declared with the QEM_MODEL_FIELD macro.
+</p>
+
+<h3 id="use">Qem in use</h3>
+<p>
+Every proram using Qem should call Qem::init() before creating any models.<br />
+And Qem::shutdown() before closing the program.<br /><br />
+Those methods make sure that we are creating and deleting our models in the right way and that there are no remaining models in memory when shutting down the program.<br />
+
+<h4>Creating a model / Getting an id</h4>
+<pre>
+	<code>
+Qem::ModelId id = Qem::TestModel::createModel();
+	</code>
+</pre>
+
+<h4>Write to the model</h4>
+<pre>
+	<code>
+Qem::TestModel::Writer writer(id);
+writer->setId(42);
+	</code>
+</pre>
+
+<h4>Read from the model</h4>
+<pre>
+	<code>
+	Qem::TestModel::Reader reader(id);
+	reader->getId();
+	</code>
+</pre>
+
+<h4>Watch the model for changes</h4>
+
+The watcher part is still tricky but I'm working on having a proper way to connect to the model updates.<br />
+For now you will receive the id of the updated model. So it forces you to know which model have been updated.<br /><br />
+
+First you must have a QObject based class with some slots defined.<br />
+Then you have to create an instance of TestModel::Watcher, and connect it to your object's slots.<br />
+A full example : 
+<pre>
+	<code>
+class TestModelWatcher : public QObject
+{
+	Q_OBJECT
+	public:	
+		TestModelWatcher() : QObject()
+		{}
+
+	public slots:
+		void onIdUpdated(const Qem::ModelId & id)
+		{
+			Qem::TestModel::Reader reader(id);
+			qDebug() << "TestModelWatcher::onIdUpdated" << reader.getId();
+		}
+};
+
+
+TestModelWatcher *modelWatcher = new TestModelWatcher();
+
+Qem::TestModel::Watcher watcher(id);
+watcher.onIdUpdated( modelWatcher, SLOT(onIdUpdated( const Qem::ModelId &)) );
+
+Qem::TestModel::Writer writer(id);
+writer.setId(42); // The onIdUpdated slot is called
+	</code>
+</pre>
+</p>
+
+<h3 id="cmake">Using Qem with CMake</h3>
+<p>
+	Qem is meant to be used with CMake. As we need to use a custom pre-processor interpreter, it's easier to manage this in a CMake macro rather than manually executing qemPreProc.<br />
+	In the library root directory, there is a cmake file : <em>QemWrapCpp.cmake</em>. It contains the following CMake macro : 
+	<pre>
+		<code>
+qem_wrap_cpp(QEM_OUTFILES ${OUTPUT_DIR} ${USING_QT5} ${QEM_HEADERS})
+QEM_OUTFILES => the macro output files list
+${OUTPUT_DIR} => the output dir where you want to file to be generated (usually the ${PROJECT_BINARY_DIR}
+${USING_QT5} => if you are using Qt5 or not 
+${QEM_HEADERS} => the list of headers containing QEM_MODEL macros
+		</code>
+	</pre>
+</p>
+
+<h3 id="os">Qem availability</h3>
+<p>
+	As Qem is based on Qt, it is available on every platform supporting the framework.<br /><br />
+
+	Currently tested on : <br />
+	<ul>
+		<li>Linux 32 bits with GCC 4.6.3 and Qt 4.8.1</li>
+		<li>Windows 7 64 bits with GCC 4.6.3 (rubenvb-4.6.3) and Qt 4.8.1</li>
+		<li>Mac OS with GCC 4.7.2 and Qt 4.8.1</li>
+	</ul>
+
+	Some pre-built packages are available on the <a href="#/downloads">Downloads page</a>.
+</p>
+
+<a href="#nav">Top</a>

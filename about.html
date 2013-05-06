@@ -1,8 +1,24 @@
 <h2>How does it work ?</h2>
 
+<h3>Basics</h3>
+<p>
+	Qem aims to be easy to use and to provide an easy and simple way of writing and using models.<br />
+	To be able to do that Qem provides some C++ macros, and a set of tools to read, write and watch models.<br />
+	Basically a model must be declarated with a defined set of members, each defined with a name and a metatype.<br />
+	Each metatype must have been declared previously with an other macro.<br />
+	You won't be able to directly access a model object, only its unique id.<br />
+	You will use this id to create the following workers : Reader, Writer, Watcher.
+</p>
+
 <h3>Macros</h3>
 <p>
 	Qem mainly uses macros to provide a easy way of writing models.<br />
+
+	There is basically two macros in Qem : <br />
+	<ul>
+		<li>QEM_MODEL_FIELD : used to declare a metatype</li>
+		<li>QEM_MODEL : used to declare a model</li>
+	</ul>
 	
 	This is great for providing developer-friendly and easy to use features, but it raises a few problems : <br />
 	<ul>
@@ -23,13 +39,4 @@
 	<code>
 		qcePreProc [-o&lt;outputFile&gt;] &lt;inputFile&gt;<br />
 	</code>
-</p>
-
-<h3>Ids</h3>
-<p>
-A model must be declarated with a defined set of members, each defined with a name and a metatype.<br />
-An agency is then used to create and/or delete models.<br />
-But you cannot directly access a model object, only its id.<br />
-
-You will use this id to create the following workers : Reader, Writer, Watcher.
 </p>
