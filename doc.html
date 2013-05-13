@@ -168,10 +168,10 @@ writer.setId(42); // The onIdUpdated slot is called
 	In the library root directory, there is a cmake file : <em>QemWrapCpp.cmake</em>. It contains the following CMake macro : 
 	<pre>
 		<code>
-qem_wrap_cpp(QEM_OUTFILES ${OUTPUT_DIR} ${USING_QT5} ${QEM_HEADERS})
+qem_wrap_cpp(QEM_OUTFILES ${QEM_PREPROC_BIN} ${OUTPUT_DIR} ${QEM_HEADERS})
 QEM_OUTFILES => the macro output files list
+${QEM_PREPROC_BIN} => the path to the qemPreproc binary, provided by FindQem.cmake
 ${OUTPUT_DIR} => the output dir where you want to file to be generated (usually the ${PROJECT_BINARY_DIR}
-${USING_QT5} => if you are using Qt5 or not 
 ${QEM_HEADERS} => the list of headers containing QEM_MODEL macros
 		</code>
 	</pre>
@@ -183,8 +183,10 @@ ${QEM_HEADERS} => the list of headers containing QEM_MODEL macros
 
 	Currently tested on : <br />
 	<ul>
-		<li>Linux 32 bits with GCC 4.6.3 and Qt 4.8.1</li>
-		<li>Windows 7 64 bits with GCC 4.6.3 (rubenvb-4.6.3) and Qt 4.8.1</li>
+		<li>Linux 32 bits with GCC 4.7.2 and Qt 4.8.1</li>
+		<li>Windows 7 64 bits with GCC 4.7.2 (rubenvb-4.6.3) and Qt 4.8.1</li>
+		<li>Windows 7 64 bits with GCC 4.7.2 (rubenvb-4.6.3) and Qt 5.0.2</li>
+		<li>Windows 7 64 bits with Visual Studio 2012 and Qt 5.0.2</li>
 		<li>Mac OS with GCC 4.7.2 and Qt 4.8.1</li>
 	</ul>
 
