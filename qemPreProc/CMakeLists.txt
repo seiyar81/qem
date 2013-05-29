@@ -57,3 +57,6 @@ target_link_libraries(qemPreproc
 	${QT_LIBRARIES}
 )
 
+install( TARGETS qemPreproc
+	RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+)

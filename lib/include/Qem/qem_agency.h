@@ -57,7 +57,7 @@ namespace Qem
 
 			void destroyModel(const Qem::ModelId & id)
 			{
-				QEM_ASSERT(m_models.find(id) != m_models.end(), "Cannot destroy model, ID is not registered");
+                QEM_ASSERT(m_models.find(id) != m_models.end(), "Cannot destroy model, ID is not registered");
 				m_models.erase( m_models.find(id) );
 				if(m_models.empty())
 				{

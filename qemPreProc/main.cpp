@@ -80,15 +80,15 @@ static QByteArray cleaned(const QByteArray &input)
 }
 
 struct QceModel { QString name; QHash<QString, QString> members; };
-QByteArray qceExpand(QByteArray & source)
+QByteArray qceExpand(QByteArray & source, const bool & generateMeta)
 {
     QString str(QLatin1String(source.data()));
-	QRegExp modelExpr("^QEM_MODEL\\(.[A-Za-z]*\\,.[0-9]{1,1}"); // Matches the model name and members count
-    QRegExp modelNameExpr("\\(.[A-Za-z]*.\\,");
+    QRegExp modelExpr("^QEM_MODEL\\(.[A-Z0-9a-z]*\\,.[0-9]{1,1}"); // Matches the model name and members count
+    QRegExp modelNameExpr("\\(.[A-Z0-9a-z]*.\\,");
     QRegExp modelEndExpr("\\)");
 
-    QRegExp memberExpr("\\([A-Za-z]*\\,.*[A-Za-z]*.\\)\\,?");
-    QRegExp memberNameExpr("\\([A-Za-z]*");
+    QRegExp memberExpr("\\([A-Z0-9a-z]*\\,.*[A-Za-z]*.\\)\\,?");
+    QRegExp memberNameExpr("\\([A-Z0-9a-z]*");
     QRegExp memberTypeExpr("[A-Za-z]*.\\)");
 
     QVector<QceModel*> models;
@@ -114,7 +114,7 @@ QByteArray qceExpand(QByteArray & source)
                 currentModel = model;
             }
         }
-        else if(metaFieldExpr.indexIn(line) != -1)
+        else if(metaFieldExpr.indexIn(line) != -1 && generateMeta)
         {
             QString metaFieldLine = metaFieldExpr.cap(0);
 
@@ -150,18 +150,18 @@ QByteArray qceExpand(QByteArray & source)
 
     foreach(QceModel* model, models)
     {
-		QString classBody = QString("\n namespace Qem { class %1 : public QObject { \n Q_OBJECT \n public: %1() : QObject() \n\n {} \n").arg(model->name);
+        QString classBody = QString("\nnamespace Qem { \n\tclass %1 : public QObject\n\t{ \n\t\tQ_OBJECT \n\t\tpublic: %1() : QObject() \n\t\t{} \n").arg(model->name);
 
         QHashIterator<QString,QString> it(model->members);
-	classBody.append("\nsignals: \n");
+    classBody.append("\n\tsignals: \n");
         while(it.hasNext())
         {
             it.next();
 
-			classBody.append(QString("void on%1Updated( const Qem::ModelId & );\n \n").arg(it.key()));
+            classBody.append(QString("\t\t\tvoid on%1Updated( const Qem::ModelId & );\n").arg(it.key()));
         }
 
-        classBody.append("}; } \n");
+        classBody.append("\t};\n} \n");
 
         mocFileBody.append(classBody).append("\n");
     }
@@ -186,6 +186,7 @@ int runPreProc(int _argc, char **_argv)
 {
 	QByteArray fileName;
 	QByteArray qemOutputFile;
+	bool generateMeta = false;
 
 	QVector<QByteArray> argv;
     for(int i = 1; i < _argc; ++i)
@@ -213,6 +214,9 @@ int runPreProc(int _argc, char **_argv)
 					qemOutputFile = opt.mid(1).split('=').last();
                 }
                 break;
+			case 'm':
+				generateMeta = true;
+				break;
             case 'h':
             default:
                 error();
@@ -232,7 +236,7 @@ int runPreProc(int _argc, char **_argv)
             file.close();
 
             cleaned(fileContent);
-            fileContent = qceExpand(fileContent);
+            fileContent = qceExpand(fileContent, generateMeta);
 
 			if(qemOutputFile.isEmpty())
             {

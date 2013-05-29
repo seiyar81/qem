@@ -8,6 +8,14 @@ set(qem_LIB_PATCH_VERSION "0")
 
 set(CMAKE_CXX_FLAGS "-Wall")
 
+IF("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+ENDIF("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
+
+IF(LINUX)
+	set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-fPIC")
+ENDIF()
+
 include(QemWrapCpp.cmake)
 
 #---------------------------------------------------------------------------$
@@ -58,7 +66,7 @@ endif()
 
 set(qem_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lib/include" CACHE STRING "QtEventableModels include directory")
 set(LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib" CACHE STRING "Directory where the library will be installed")
-set(CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/cmake/${CMAKE_PROJECT_NAME}" CACHE PATH "Directory where to install QemWrapCpp.cmake")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/cmake/" CACHE PATH "Directory where to install QemWrapCpp.cmake")
 set(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include/" CACHE PATH "Directory where to install qem includes")
 
 include_directories(
@@ -134,7 +142,7 @@ install( TARGETS qem
 	PUBLIC_HEADER DESTINATION ${INCLUDE_INSTALL_DIR}/Qem
 )
 
-install(FILES QemWrapCpp.cmake
+install(FILES QemWrapCpp.cmake FindQem.cmake
 				DESTINATION "${CMAKECONFIG_INSTALL_DIR}")
 
 #------------------------------------------------------------------------------

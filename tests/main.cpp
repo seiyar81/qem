@@ -1,6 +1,7 @@
 #include <UnitTest++/UnitTest++.h>
 
 #include <Qem/Qem>
+#include <iostream>
 
 #include "fixtures.h"
 #include "watcher.h"

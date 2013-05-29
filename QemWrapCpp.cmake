@@ -8,7 +8,7 @@ MACRO(QEM_EXTRACT_OPTIONS _qem_files _qem_options)
   ENDFOREACH(_currentArg)
 ENDMACRO(QEM_EXTRACT_OPTIONS)
 
-MACRO(qem_wrap_cpp outfiles destdir using_qt5)
+MACRO(qem_wrap_cpp outfiles QEM_PREPROC_BIN destdir)
 	
 	QEM_EXTRACT_OPTIONS(moc_files moc_options ${ARGN})
 
@@ -22,7 +22,7 @@ MACRO(qem_wrap_cpp outfiles destdir using_qt5)
 		set(qtMocFile ${destdir}/moc_${it_base}.cxx)
 
         add_custom_command(OUTPUT ${qemPreProcFile}
-										COMMAND ${QEMPreProcBin} "${it}" -o=${qemPreProcFile}
+										COMMAND ${QEM_PREPROC_BIN} "${it}" -o=${qemPreProcFile}
                                 )
 		add_custom_command(OUTPUT ${qtMocFile}
 										COMMAND ${QT_MOC_EXECUTABLE} "${qemPreProcFile}" -f"${qemPreProcFile}" > "${qtMocFile}"

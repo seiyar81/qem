@@ -1,10 +1,7 @@
 #ifndef MODEL_FIELD_H_INCLUDED
 #define MODEL_FIELD_H_INCLUDED
 
-#ifdef QEM_DEBUG
-#include <QDebug>
-#include <iostream>
-#endif
+#define QEM_MODELID_INVALID static_cast<unsigned long>(-1)
 
 namespace Qem
 {
@@ -26,18 +23,9 @@ namespace Qem
 
 			bool operator==(const ModelId & second) const;
 
-			static unsigned long m_invalidValue;
 		private:
-			#ifdef QEM_DEBUG
-			friend QDebug operator<<(QDebug debug, const ModelId & id);
-			#endif
-
 			unsigned long m_id;
 	};
-
-	#ifdef QEM_DEBUG
-	QDebug operator<<(QDebug debug,  const ModelId & id);
-	#endif
 
 	template<typename T>
 	class ModelField
@@ -100,7 +88,7 @@ namespace Qem
 	template<typename T>
 	const T& ModelField<T>::value() const
 	{
-		QEM_ASSERT(isValid(), "Cannot access ModelField value, value is not valid");
+        QEM_ASSERT(this->isValid(), "Cannot access ModelField value, value is not valid");
 		return m_value;
 	}
 

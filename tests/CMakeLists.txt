@@ -60,7 +60,10 @@ set(QEM_HEADERS
 #------------------------------------------------------------------------------
 #                                Qt MACROS
 #------------------------------------------------------------------------------
-qem_wrap_cpp(QEM_OUTFILES ${PROJECT_BINARY_DIR} ${Qt5Core_FOUND} ${QEM_HEADERS})
+get_property(qemPreproc_loc TARGET qemPreproc PROPERTY LOCATION)
+get_filename_component(QEM_PREPROC_BIN ${qemPreproc_loc} NAME)
+
+qem_wrap_cpp(QEM_OUTFILES ${QEM_PREPROC_BIN} ${PROJECT_BINARY_DIR} ${QEM_HEADERS})
 
 if(NOT Qt5Core_FOUND)
 	qt4_wrap_cpp(MOC_OUTFILES ${MOC_HEADERS})

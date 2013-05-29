@@ -21,7 +21,7 @@ namespace Qem																				\
 	private:																				\
 																							\
 		friend class Qem::Agency<NAME>;														\
-		NAME()	: QObject()																	\
+        explicit NAME()	: QObject()																	\
 		{}																					\
 		Qem::ModelId							m_modelId;									\
 
