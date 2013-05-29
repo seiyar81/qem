@@ -28,7 +28,7 @@
 	The solution to this is for Qem to have his own preprocessor generator.<br />
 </p>
 	
-<h3>qemPreProc</h3>
+<h3>qemPreproc</h3>
 <p>
 	qemPreproc is a simple tool that you need to call (there is also a CMake macro to ease your pain ;) ) <br />
 	the header files which contains QEM macros.<br /><br />
@@ -43,4 +43,7 @@
 		<li>-o : the output file</li>
 		<li>-m : flag to include the QEM_MODEL_FIELD macro expansions</li>
 	</ul>
+
+	By default QEM_MODEL_FIELD are not included<br />
+	In fact, if you use external types the library headers should be included. Maybe in a future version.
 </p>
