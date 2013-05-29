@@ -25,9 +25,10 @@ Qem uses CMake so :
 
 Replace make with mingw32-make or nmake given your target OS.
 Currently tested on : 
-* Linux 32 bits with GCC 4.6.3 and Qt 4.8.1
-* Windows 7 64 bits with GCC 4.6.3 (rubenvb-4.6.3) and Qt 4.8.1
-* Mac OS with GCC 4.7.2 and Qt 4.8.1
+* Linux 32 bits with GCC 4.7.3
+* Windows 7 64 bits with GCC 4.7.2
+* Mac OS with GCC 4.7.2
+* Working with Qt 4.8.1 to Qt 5.0.2
 
 Build & Run tests : 
 	-DWITH_TESTS=1
