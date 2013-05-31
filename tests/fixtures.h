@@ -27,4 +27,9 @@ QEM_MODEL(TestDataB, 3,
     (Notes,     vectorInt)
 )
 
+QEM_MODEL_AGGREGATOR(TestAggregator, 2,
+	(TestData),
+	(TestDataB)
+)
+
 #endif // TESTDATA_H

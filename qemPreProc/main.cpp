@@ -80,6 +80,7 @@ static QByteArray cleaned(const QByteArray &input)
 }
 
 struct QceModel { QString name; QHash<QString, QString> members; };
+struct QceModelAggr { QString name; QStringList members; };
 QByteArray qceExpand(QByteArray & source, const bool & generateMeta)
 {
     QString str(QLatin1String(source.data()));
@@ -87,12 +88,19 @@ QByteArray qceExpand(QByteArray & source, const bool & generateMeta)
     QRegExp modelNameExpr("\\(.[A-Z0-9a-z]*.\\,");
     QRegExp modelEndExpr("\\)");
 
+	QRegExp modelAggrExpr("^QEM_MODEL_AGGREGATOR\\(.[A-Z0-9a-z]*\\,.[0-9]{1,1}"); // Matches the model name and members count
+	QRegExp modelAggrNameExpr("\\(.[A-Z0-9a-z]*.\\,");
+	QRegExp modelAggrEndExpr("\\)");
+
     QRegExp memberExpr("\\([A-Z0-9a-z]*\\,.*[A-Za-z]*.\\)\\,?");
     QRegExp memberNameExpr("\\([A-Z0-9a-z]*");
     QRegExp memberTypeExpr("[A-Za-z]*.\\)");
 
     QVector<QceModel*> models;
     QceModel* currentModel = 0;
+
+	QVector<QceModelAggr*> modelsAggr;
+	QceModelAggr* currentModelAggr = 0;
 
 	QString mocFileBody = "#include <Qem/Qem> \n\n";
 
@@ -125,7 +133,20 @@ QByteArray qceExpand(QByteArray & source, const bool & generateMeta)
             QString fieldName = metaFieldNameExpr.cap(0).remove(")").remove(",").trimmed();
 
 			mocFileBody.append(QString("typedef Qem::ModelField< %1 >		m%2;\n").arg(fieldType).arg(fieldName));
-        }
+		}
+		else if(modelAggrExpr.indexIn(line) != -1 && currentModelAggr == 0)
+		{
+			QString line = modelAggrExpr.cap(0);
+			if(modelAggrNameExpr.indexIn(line) != -1)
+			{
+				QString modelName = modelAggrNameExpr.cap(0).remove("(").remove(",").trimmed();
+				QceModelAggr* model = new QceModelAggr();
+				model->name = modelName;
+				modelsAggr.push_back(model);
+				currentModelAggr = model;
+			}
+		}
+
 
         if(currentModel)
         {
@@ -146,6 +167,22 @@ QByteArray qceExpand(QByteArray & source, const bool & generateMeta)
                 currentModel = 0;
             }
         }
+		else if(currentModelAggr)
+		{
+			if(memberExpr.indexIn(line) != -1)
+			{
+				QString member = memberExpr.cap(0);
+
+				memberNameExpr.indexIn(member);
+				QString memberName = memberNameExpr.cap(0).remove("(").trimmed();
+
+				currentModelAggr->members.push_back(memberName);
+			}
+			else if(modelAggrEndExpr.indexIn(line) != -1)
+			{
+				currentModelAggr = 0;
+			}
+		}
     }
 
     foreach(QceModel* model, models)
@@ -165,6 +202,19 @@ QByteArray qceExpand(QByteArray & source, const bool & generateMeta)
 
         mocFileBody.append(classBody).append("\n");
     }
+	models.clear();
+
+	foreach(QceModelAggr* model, modelsAggr)
+	{
+		QString classBody = QString("\nnamespace Qem { \n\tclass %1 : public QObject\n\t{ \n\t\tQ_OBJECT \n\t\tpublic: %1() : QObject() \n\t\t{} \n").arg(model->name);
+		foreach(QString member, model->members)
+		{
+			classBody.append(QString( "\n\nclass %1;\n\n" ).arg(member));
+		}
+		classBody.append("\t};\n} \n");
+		mocFileBody.append(classBody).append("\n");
+	}
+	modelsAggr.clear();
 
 	QString qceFileDef = "QEM_PREPROC_" + ( models.size() ? models.first()->name.toUpper() : "" ) + "_H";
     mocFileBody.prepend(QString("#ifndef %1\n#define %1 \n\n#include <QObject>\n\n").arg(qceFileDef));

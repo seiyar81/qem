@@ -6,6 +6,7 @@
 #include <cassert>
 #include <string>
 #include <vector>
+#include <functional>
 
 // Qce includes
 #include "qem_assert.h"

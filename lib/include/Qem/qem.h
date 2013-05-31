@@ -14,16 +14,16 @@ namespace Qem																				\
 		class Reader;																		\
 		typedef Reader NAME##Reader;														\
 																							\
-	static Qem::ModelId& createModel()														\
-		{ return Qem::Agency<NAME>::instance().createModel(); }								\
-	static void destroyModel(const Qem::ModelId & id)										\
-		{ Qem::Agency<NAME>::instance().destroyModel(id); }									\
+		static Qem::ModelId& createModel()													\
+			{ return Qem::Agency<NAME>::instance().createModel(); }							\
+		static void destroyModel(const Qem::ModelId & id)									\
+			{ Qem::Agency<NAME>::instance().destroyModel(id); }								\
 	private:																				\
 																							\
 		friend class Qem::Agency<NAME>;														\
-        explicit NAME()	: QObject()																	\
+		explicit NAME()	: QObject()															\
 		{}																					\
-		Qem::ModelId							m_modelId;									\
+		Qem::ModelId											m_modelId;					\
 
 #define QEM_MODEL_CLASS_FOOTER(NAME)														\
 		private:																			\
@@ -81,6 +81,67 @@ namespace Qem																				\
 	};																						\
 
 
+#define QEM_MODEL_AGGREGATOR_CLASS_HEADER(NAME)												\
+namespace Qem																				\
+{																							\
+	class NAME	: public QObject															\
+	{																						\
+		Q_OBJECT																			\
+	public:																					\
+		static Qem::ModelId& createModel()													\
+			{																				\
+				\
+				return Qem::AggregatorAgency<NAME>::instance().createModel();				\
+			}																				\
+		static void destroyModel(const Qem::ModelId & id)									\
+			{ Qem::AggregatorAgency<NAME>::instance().destroyModel(id); }					\
+	private:																				\
+																							\
+		friend class Qem::AggregatorAgency<NAME>;											\
+		explicit NAME()	: QObject()															\
+		{																					\
+			this->initAggregates();															\
+		}																					\
+																							\
+		Qem::ModelId& getModelId( const char * name )										\
+		{																					\
+			return m_modelsId[name];														\
+		}																					\
+																							\
+		Qem::ModelId							m_modelId;									\
+		std::map< const char *,																\
+			std::pair< std::function<Qem::ModelId &()>,										\
+						std::function<void(const Qem::ModelId &)> > >						\
+				m_modelDelegates;															\
+		std::map< const char *, Qem::ModelId >	m_modelsId;									\
+		void initAggregates()																\
+		{																					\
+			using namespace std::placeholders;												\
+
+
+#define QEM_MODEL_AGGREGATOR_READER(NAME)													\
+			for(const auto& i : m_modelDelegates)											\
+			{																				\
+				auto id = i.second.first();													\
+				m_modelsId.insert( std::make_pair( i.first, id ));							\
+			}																				\
+		}																					\
+	public:																					\
+		class Reader																		\
+		{																					\
+			public:																			\
+				Reader(const Qem::ModelId & id)												\
+				{																			\
+					m_model = Qem::AggregatorAgency<NAME>::instance().model(id);			\
+				}																			\
+			private:																		\
+				NAME* m_model;																\
+
+#define QEM_MODEL_AGGREGATOR_CLASS_FOOTER(NAME)												\
+		};																					\
+	};																						\
+}
+
 //----------------------------------------------------------------------------------------
 // Bit field attribute
 //----------------------------------------------------------------------------------------
@@ -90,25 +151,35 @@ namespace Qem																				\
 //----------------------------------------------------------------------------------------
 // Name of different components
 //----------------------------------------------------------------------------------------
-#define QEM_MODEL_FIELD_GETTER(NAME)		get##NAME
-#define QEM_MODEL_FIELD_SETTER(NAME)		set##NAME
-#define QEM_MODEL_FIELD_VALID(NAME)			is##NAME##Valid
-#define QEM_MODEL_FIELD_UPDATED(NAME)		is##NAME##Updated
-#define QEM_MODEL_BIND_FIELD_UPDATED(NAME)	bindOn##NAME##Updated
-#define QEM_MODEL_FIELD_ATTRIBUTE(NAME)		m_mf##NAME
-#define QEM_MODEL_FIELD_TYPE(TYPE)			m##TYPE
-#define QEM_META_MODEL_FIELD_NAME(NAME)		MetaModelImpl##NAME
-#define QEM_MODEL_FIELD_DATATYPE(NAME)		QEM_META_MODEL_FIELD_NAME(NAME)::data_type
-#define QEM_MODEL_ID(NAME)					NAME##Id
+#define QEM_MODEL_FIELD_GETTER(NAME)				get##NAME
+#define QEM_MODEL_FIELD_SETTER(NAME)				set##NAME
+#define QEM_MODEL_FIELD_VALID(NAME)					is##NAME##Valid
+#define QEM_MODEL_FIELD_UPDATED(NAME)				is##NAME##Updated
+#define QEM_MODEL_BIND_FIELD_UPDATED(NAME)			bindOn##NAME##Updated
+#define QEM_MODEL_FIELD_ATTRIBUTE(NAME)				m_mf##NAME
+#define QEM_MODEL_FIELD_TYPE(TYPE)					m##TYPE
+#define QEM_META_MODEL_FIELD_NAME(NAME)				MetaModelImpl##NAME
+#define QEM_MODEL_FIELD_DATATYPE(NAME)				QEM_META_MODEL_FIELD_NAME(NAME)::data_type
+#define QEM_MODEL_ID(NAME)							NAME##Id
 
-#define QEM_WATCH_FIELD_UPDATED(NAME)		on##NAME##Updated
-#define QEM_WATCH_FIELD_UPDATED_STR(NAME)	signalOn##NAME##Updated
+#define QEM_MODEL_STR(NAME)							#NAME
+
+#define QEM_WATCH_FIELD_UPDATED(NAME)				on##NAME##Updated
+#define QEM_WATCH_FIELD_UPDATED_STR(NAME)			signalOn##NAME##Updated
+
+#define QEM_AGGREGATOR_MODEL_READER(NAME)			NAME::Reader
+#define QEM_AGGREGATOR_MODEL_FIELD_GETREADER(NAME)	get##NAME##Reader
+#define QEM_AGGREGATOR_MODEL_WRITER(NAME)			NAME::Writer
+#define QEM_AGGREGATOR_MODEL_FIELD_GETWRITER(NAME)	get##NAME##Writer
+#define QEM_AGGREGATOR_MODEL_WATCHER(NAME)			NAME::Watcher
+#define QEM_AGGREGATOR_MODEL_FIELD_GETWATCHER(NAME)	get##NAME##Watcher
+
 //----------------------------------------------------------------------------------------
 // Meta model field (type + id of a given field)
 //----------------------------------------------------------------------------------------
 #define QEM_META_MODEL_FIELD_IMPL(ID, NAME, TYPE)											\
 	public:																					\
-	typedef Qem::MetaModelField< QEM_MODEL_FIELD_TYPE(TYPE)::data_type, ID >					\
+	typedef Qem::MetaModelField< QEM_MODEL_FIELD_TYPE(TYPE)::data_type, ID >				\
 						QEM_META_MODEL_FIELD_NAME(NAME);
 //----------------------------------------------------------------------------------------
 // Field method declaration and implementation
@@ -193,6 +264,31 @@ namespace Qem																				\
 			return  m_model->m_field.getBit(QEM_META_MODEL_FIELD_NAME(NAME)::update_id);	\
 		}																					\
 
+#define QEM_AGGREGATOR_INIT_MODEL_FIELD(ID, NAME)											\
+		m_modelDelegates.insert( std::make_pair( QEM_MODEL_STR(NAME),						\
+				std::make_pair( &NAME::createModel,											\
+						std::bind(NAME::destroyModel, _1) ) ) );							\
+
+#define QEM_AGGREGATOR_MODEL_FIELD_IMPL(ID, NAME)											\
+	public:																					\
+		QEM_AGGREGATOR_MODEL_READER(NAME) QEM_AGGREGATOR_MODEL_FIELD_GETREADER(NAME)()		\
+		{																					\
+			return QEM_AGGREGATOR_MODEL_READER(NAME)(										\
+						m_model->getModelId( QEM_MODEL_STR(NAME) ) );						\
+		}																					\
+		QEM_AGGREGATOR_MODEL_WRITER(NAME) QEM_AGGREGATOR_MODEL_FIELD_GETWRITER(NAME)()		\
+		{																					\
+			return QEM_AGGREGATOR_MODEL_WRITER(NAME)(										\
+						m_model->getModelId( QEM_MODEL_STR(NAME) ) );						\
+		}																					\
+		QEM_AGGREGATOR_MODEL_WATCHER(NAME) QEM_AGGREGATOR_MODEL_FIELD_GETWATCHER(NAME)()	\
+		{																					\
+			return QEM_AGGREGATOR_MODEL_WATCHER(NAME)(										\
+						m_model->getModelId( QEM_MODEL_STR(NAME) ) );						\
+		}																					\
+
+
+
 //----------------------------------------------------------------------------------------
 // Complete model definitions
 //----------------------------------------------------------------------------------------
@@ -214,6 +310,16 @@ namespace Qem																				\
 //----------------------------------------------------------------------------------------
 #define QEM_MODEL(...)																		\
 	QEM_MODEL_COMPLETION(__VA_ARGS__)
+//----------------------------------------------------------------------------------------
+#define QEM_MODEL_AGGREGATOR_COMPLETION(NAME, N, ...)										\
+	QEM_MODEL_AGGREGATOR_CLASS_HEADER(NAME)													\
+	PP_CAT(PP_RECURSIVE_IMPL, N)(QEM_AGGREGATOR_INIT_MODEL_FIELD, __VA_ARGS__)				\
+	QEM_MODEL_AGGREGATOR_READER(NAME)														\
+	PP_CAT(PP_RECURSIVE_IMPL, N)(QEM_AGGREGATOR_MODEL_FIELD_IMPL, __VA_ARGS__)				\
+	QEM_MODEL_AGGREGATOR_CLASS_FOOTER(NAME)
+//----------------------------------------------------------------------------------------
+#define QEM_MODEL_AGGREGATOR(...)															\
+	QEM_MODEL_AGGREGATOR_COMPLETION(__VA_ARGS__)
 //----------------------------------------------------------------------------------------
 
 namespace Qem

@@ -1,7 +1,10 @@
 #include <UnitTest++/UnitTest++.h>
 
 #include <Qem/Qem>
+
 #include <iostream>
+#include <typeinfo>
+#include <functional>
 
 #include "fixtures.h"
 #include "watcher.h"
@@ -110,6 +113,46 @@ SUITE(QemWatcher)
 {
 
 	// TODO
+
+}
+
+SUITE(QemAggregator)
+{
+
+	TEST(QemAggregatorCreateReaders)
+	{
+		Qem::TestAggregator::Reader reader( Qem::TestAggregator::createModel() );
+		QEM_CHECK_NO_ASSERT( reader.getTestDataReader() );
+		QEM_CHECK_NO_ASSERT( reader.getTestDataBReader() );
+	}
+
+	TEST(QemAggregatorGetWritersReaders)
+	{
+		Qem::TestAggregator::Reader reader( Qem::TestAggregator::createModel() );
+
+		Qem::TestData::Writer writerData = reader.getTestDataWriter();
+		writerData.setId(42);
+		Qem::TestData::Reader readerData = reader.getTestDataReader();
+		CHECK_EQUAL( readerData.getId(), 42 );
+		writerData.setId(64);
+		CHECK_EQUAL( readerData.getId(), 64 );
+
+		Qem::TestDataB::Writer writerDataB = reader.getTestDataBWriter();
+		writerDataB.setId(666);
+		Qem::TestDataB::Reader readerDataB = reader.getTestDataBReader();
+		CHECK_EQUAL( readerDataB.getId(), 666 );
+		writerDataB.setId(1024);
+		CHECK_EQUAL( readerDataB.getId(), 1024 );
+	}
+
+	TEST(QemAggregatorGetReadersAssert)
+	{
+		Qem::TestAggregator::Reader reader( Qem::TestAggregator::createModel() );
+		Qem::TestData::Reader readerData = reader.getTestDataReader();
+		QEM_CHECK_ASSERT( readerData.getBirthDate() );
+		Qem::TestDataB::Reader readerDataB = reader.getTestDataBReader();
+		QEM_CHECK_ASSERT( readerDataB.getName() );
+	}
 
 }
 
