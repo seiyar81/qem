@@ -94,6 +94,20 @@ QEM_MODEL(TestModel, 3,
 
 Always take three arguments : the model name, the member count, the members list.<br />
 Each model member is declarated by specifiying a name and a metatype as previously declared with the QEM_MODEL_FIELD macro.
+
+<h4>Declare a model aggregator</h4>
+
+<pre>
+	<code>
+QEM_MODEL_AGGREGATOR(ModelAggregator, 2,
+	(TestModel),
+	(TestModel2)
+)
+	</code>
+</pre>
+
+A model aggregator simply works as a proxy for managing multiple models from a unique interface so you don't have to manually handle the model ids.
+
 </p>
 
 <h3 id="use">Qem in use</h3>
