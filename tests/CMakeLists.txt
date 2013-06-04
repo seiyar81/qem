@@ -4,6 +4,18 @@ project(qemTests)
 
 include(../QemWrapCpp.cmake)
 
+# Compiler-specific flags and definitions
+
+if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+endif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
+
+if(CMAKE_COMPILER_IS_GNUCXX)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
+endif()
+
 #---------------------------------------------------------------------------$
 #                             QT - Variables
 #---------------------------------------------------------------------------$
@@ -60,10 +72,7 @@ set(QEM_HEADERS
 #------------------------------------------------------------------------------
 #                                Qt MACROS
 #------------------------------------------------------------------------------
-get_property(qemPreproc_loc TARGET qemPreproc PROPERTY LOCATION)
-get_filename_component(QEM_PREPROC_BIN ${qemPreproc_loc} NAME)
-
-qem_wrap_cpp(QEM_OUTFILES ${QEM_PREPROC_BIN} ${PROJECT_BINARY_DIR} ${QEM_HEADERS})
+qem_wrap_cpp(QEM_OUTFILES ${QEMPreProcBin} ${PROJECT_BINARY_DIR} ${QEM_HEADERS})
 
 if(NOT Qt5Core_FOUND)
 	qt4_wrap_cpp(MOC_OUTFILES ${MOC_HEADERS})

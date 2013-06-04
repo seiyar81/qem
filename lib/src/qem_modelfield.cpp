@@ -11,7 +11,13 @@ namespace Qem
 	}
 	ModelId::ModelId(const unsigned long & id): m_id(id)
 	{
-        QEM_ASSERT(m_id != QEM_MODELID_INVALID, "ModelId created with invalidValue");
+	}
+    ModelId::ModelId(const ModelId & id): m_id(id.m_id)
+    {
+    }
+	ModelId::ModelId(ModelId && id)
+	{
+		m_id = id.m_id;
 	}
 	//-----------------------------------------------------------------------------
 	Qem::ModelId ModelId::random(const unsigned long & base)
@@ -33,6 +39,14 @@ namespace Qem
         return m_id != QEM_MODELID_INVALID;
 	}
 
+	ModelId& ModelId::operator=(ModelId&& id)
+	{
+		if(&id != this)
+		{
+			this->m_id = id.m_id;
+		}
+	}
+
 	bool ModelId::operator<(const ModelId & second) const
 	{
 		return (m_id < second.m_id);
@@ -47,6 +61,11 @@ namespace Qem
 	{
 		return (m_id == second.m_id);
 	}
+
+    bool ModelId::operator!=(const ModelId & second) const
+    {
+        return (m_id != second.m_id);
+    }
 
 }
 

@@ -23,6 +23,8 @@ namespace Qem																				\
 		friend class Qem::Agency<NAME>;														\
 		explicit NAME()	: QObject()															\
 		{}																					\
+		~NAME()																				\
+		{}																					\
 		Qem::ModelId											m_modelId;					\
 
 #define QEM_MODEL_CLASS_FOOTER(NAME)														\
@@ -40,7 +42,7 @@ namespace Qem																				\
 			public:																			\
 				Watcher(const Qem::ModelId & id)											\
 				{																			\
-					m_model = Qem::Agency<NAME>::instance().model(id);						\
+					m_model = Qem::Agency<NAME>::model(id);									\
 				}																			\
 				bool isUpdated() const		{ return m_model->m_field.getBit(0); }			\
 				void updateNotified()		{ m_model->m_field.reset(false);     }			\
@@ -57,7 +59,7 @@ namespace Qem																				\
 			public:																			\
 				Writer(const Qem::ModelId & id)												\
 				{																			\
-					m_model = Qem::Agency<NAME>::instance().model(id);						\
+					m_model = Qem::Agency<NAME>::model(id);									\
 				}																			\
 			private:																		\
 				NAME* m_model;
@@ -72,7 +74,7 @@ namespace Qem																				\
 			public:																			\
 				Reader(const Qem::ModelId & id)                                             \
 				{																			\
-					m_model = Qem::Agency<NAME>::instance().model(id);						\
+					m_model = Qem::Agency<NAME>::model(id);									\
 				}																			\
 			private:																		\
 				NAME* m_model;
@@ -90,8 +92,7 @@ namespace Qem																				\
 	public:																					\
 		static Qem::ModelId& createModel()													\
 			{																				\
-				\
-				return Qem::AggregatorAgency<NAME>::instance().createModel();				\
+                return Qem::AggregatorAgency<NAME>::instance().createModel();				\
 			}																				\
 		static void destroyModel(const Qem::ModelId & id)									\
 			{ Qem::AggregatorAgency<NAME>::instance().destroyModel(id); }					\
@@ -102,6 +103,10 @@ namespace Qem																				\
 		{																					\
 			this->initAggregates();															\
 		}																					\
+		~NAME()                         													\
+        {																					\
+			this->deleteAggregates();														\
+        }																					\
 																							\
 		Qem::ModelId& getModelId( const char * name )										\
 		{																					\
@@ -114,6 +119,16 @@ namespace Qem																				\
 						std::function<void(const Qem::ModelId &)> > >						\
 				m_modelDelegates;															\
 		std::map< const char *, Qem::ModelId >	m_modelsId;									\
+                                                                                            \
+        void deleteAggregates()																\
+        {																					\
+            for(const auto& i : m_modelDelegates)											\
+            {																				\
+                i.second.second( m_modelsId[ i.first ] );                                   \
+            }                                                                               \
+            m_modelsId.clear();                                                             \
+            m_modelDelegates.clear();                                                       \
+        }                                                                                   \
 		void initAggregates()																\
 		{																					\
 			using namespace std::placeholders;												\
@@ -132,7 +147,7 @@ namespace Qem																				\
 			public:																			\
 				Reader(const Qem::ModelId & id)												\
 				{																			\
-					m_model = Qem::AggregatorAgency<NAME>::instance().model(id);			\
+					m_model = Qem::AggregatorAgency<NAME>::model(id);						\
 				}																			\
 			private:																		\
 				NAME* m_model;																\
@@ -173,6 +188,7 @@ namespace Qem																				\
 #define QEM_AGGREGATOR_MODEL_FIELD_GETWRITER(NAME)	get##NAME##Writer
 #define QEM_AGGREGATOR_MODEL_WATCHER(NAME)			NAME::Watcher
 #define QEM_AGGREGATOR_MODEL_FIELD_GETWATCHER(NAME)	get##NAME##Watcher
+#define QEM_AGGREGATOR_MODEL_FIELD_GETID(NAME)      get##NAME##Id
 
 //----------------------------------------------------------------------------------------
 // Meta model field (type + id of a given field)
@@ -286,6 +302,10 @@ namespace Qem																				\
 			return QEM_AGGREGATOR_MODEL_WATCHER(NAME)(										\
 						m_model->getModelId( QEM_MODEL_STR(NAME) ) );						\
 		}																					\
+        Qem::ModelId& QEM_AGGREGATOR_MODEL_FIELD_GETID(NAME)()                              \
+        {																					\
+            return m_model->getModelId( QEM_MODEL_STR(NAME) );                              \
+        }																					\
 
 
 
@@ -322,11 +342,28 @@ namespace Qem																				\
 	QEM_MODEL_AGGREGATOR_COMPLETION(__VA_ARGS__)
 //----------------------------------------------------------------------------------------
 
+#if defined(_WIN32)
+    #define QEM_EXPORT __declspec(dllexport)
+    #define QEM_IMPORT __declspec(dllimport)
+
+    #ifdef _MSC_VER
+        #pragma warning(disable : 4251)
+    #endif
+#else
+    #if __GNUC__ >= 4
+        #define QEM_EXPORT __attribute__ ((__visibility__ ("default")))
+        #define QEM_IMPORT __attribute__ ((__visibility__ ("default")))
+    #else
+        #define QEM_EXPORT
+        #define QEM_IMPORT
+    #endif
+#endif
+
 namespace Qem
 {
-	void init();
+    QEM_EXPORT void init();
 
-	void shutdown();
+    QEM_EXPORT void shutdown();
 }
 
 #endif //QEM_MACROS

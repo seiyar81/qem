@@ -1,27 +1,35 @@
 #ifndef MODEL_FIELD_H_INCLUDED
 #define MODEL_FIELD_H_INCLUDED
 
+#include <Qem/qem.h>
+
 #define QEM_MODELID_INVALID static_cast<unsigned long>(-1)
 
 namespace Qem
 {
 
-	class ModelId
+    class QEM_EXPORT ModelId
 	{
 		public:
 			ModelId();
-            ModelId(const unsigned long & id);
+            ModelId(const unsigned long &);
+            ModelId(const ModelId &);
+			ModelId(ModelId && id);
 
 			static Qem::ModelId random(const unsigned long & base = 0);
 
 			//-----------------------------------------------------------------------------
 			bool isValid() const;
 
+			ModelId& operator=(ModelId&&);
+
 			bool operator<(const ModelId & second) const;
 
 			bool operator>(const ModelId & second) const;
 
 			bool operator==(const ModelId & second) const;
+
+            bool operator!=(const ModelId & second) const;
 
 		private:
 			unsigned long m_id;

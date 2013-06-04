@@ -4,6 +4,10 @@
 #include "qem_modelfield.h"
 #include <set>
 #include <map>
+#include <memory>
+
+#include <iostream>
+#include <typeinfo>
 
 namespace Qem
 {
@@ -12,7 +16,7 @@ namespace Qem
 	template<typename T>
 	class AggregatorAgency;
 
-	class AgencyManager
+    class QEM_EXPORT AgencyManager
 	{
 		public:
 			static void init();
@@ -35,7 +39,7 @@ namespace Qem
 	};
 
 	template<typename T>
-	class Agency
+    class QEM_EXPORT Agency
 	{
 		public:
 			static Agency&							instance()
@@ -62,6 +66,8 @@ namespace Qem
 			void destroyModel(const Qem::ModelId & id)
 			{
 				QEM_ASSERT(m_models.find(id) != m_models.end(), "Cannot destroy model, ID is not registered");
+				T* t = m_models.find(id)->second;
+				delete t;
 				m_models.erase( m_models.find(id) );
 				if(m_models.empty())
 				{
@@ -104,10 +110,11 @@ namespace Qem
 				QEM_ASSERT(m_models.empty(), "Models map is not empty");
 			}
 
-			T* model(const Qem::ModelId & id)
+			static T* model(const Qem::ModelId & id)
 			{
-				QEM_ASSERT(m_models.find(id) != m_models.end(), "Cannot find model, ID is not registered");
-				return (*m_models.find(id)).second;
+				QEM_ASSERT(m_instance, "Cannot access agency, no model registered");
+				QEM_ASSERT(m_instance->m_models.find(id) != m_instance->m_models.end(), "Cannot find model, ID is not registered");
+				return (*m_instance->m_models.find(id)).second;
 			}
 
 			static Agency*							m_instance;
@@ -147,6 +154,9 @@ namespace Qem
 			void destroyModel(const Qem::ModelId & id)
 			{
 				QEM_ASSERT(m_models.find(id) != m_models.end(), "Cannot destroy model, ID is not registered");
+				T* t = m_models.find(id)->second;
+				t->deleteAggregates();
+				delete t;
 				m_models.erase( m_models.find(id) );
 				if(m_models.empty())
 				{
@@ -187,14 +197,15 @@ namespace Qem
 				QEM_ASSERT(m_models.empty(), "Models map is not empty");
 			}
 
-			T* model(const Qem::ModelId & id)
+			static T* model(const Qem::ModelId & id)
 			{
-				QEM_ASSERT(m_models.find(id) != m_models.end(), "Cannot find model, ID is not registered");
-				return (*m_models.find(id)).second;
+				QEM_ASSERT(m_instance, "Cannot access agency, no model registered");
+				QEM_ASSERT(m_instance->m_models.find(id) != m_instance->m_models.end(), "Cannot find model, ID is not registered");
+				return (*m_instance->m_models.find(id)).second;
 			}
 
 			static AggregatorAgency*				m_instance;
-			std::map<Qem::ModelId, T*>				m_models;
+			std::map<Qem::ModelId, T* >				m_models;
 			unsigned long							m_nextId;
 
 			Qem::ModelId							m_agencyId;

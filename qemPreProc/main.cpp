@@ -187,7 +187,7 @@ QByteArray qceExpand(QByteArray & source, const bool & generateMeta)
 
     foreach(QceModel* model, models)
     {
-        QString classBody = QString("\nnamespace Qem { \n\tclass %1 : public QObject\n\t{ \n\t\tQ_OBJECT \n\t\tpublic: %1() : QObject() \n\t\t{} \n").arg(model->name);
+		QString classBody = QString("\nnamespace Qem { \n\tclass %1 : public QObject\n\t{ \n\t\tQ_OBJECT \n\t\tpublic: %1() : QObject() \n\t\t{} \n\t\t~%1() {}").arg(model->name);
 
         QHashIterator<QString,QString> it(model->members);
     classBody.append("\n\tsignals: \n");
@@ -206,12 +206,16 @@ QByteArray qceExpand(QByteArray & source, const bool & generateMeta)
 
 	foreach(QceModelAggr* model, modelsAggr)
 	{
-		QString classBody = QString("\nnamespace Qem { \n\tclass %1 : public QObject\n\t{ \n\t\tQ_OBJECT \n\t\tpublic: %1() : QObject() \n\t\t{} \n").arg(model->name);
+		QString classBody = QString("\nnamespace Qem { \n\tclass %1 : public QObject\n\t{ \n\t\tQ_OBJECT \n\t\tpublic: %1() : QObject() \n\t\t{} \n\t\t").arg(model->name);
+		QString membersBody = QString("std::map< const char *,std::pair< std::function<Qem::ModelId &()>, std::function<void(const Qem::ModelId &)> > >	 m_modelDelegates;\n\t\tstd::map< const char *, Qem::ModelId >	m_modelsId;\n\t\t");
+		QString dtorBody = QString("void deleteAggregates()\n\t\t{\n\t\t\tfor(const auto& i : m_modelDelegates) {\n\t\t\t\ti.second.second( m_modelsId[ i.first ] );\n\t\t\t}\n\t\t}\n\t\t~%1() { this->deleteAggregates(); }").arg(model->name);
+		classBody.append(membersBody);
+		classBody.append(dtorBody);
 		foreach(QString member, model->members)
 		{
 			classBody.append(QString( "\n\nclass %1;\n\n" ).arg(member));
 		}
-		classBody.append("\t};\n} \n");
+		classBody.append("\t\n\n};\n} \n");
 		mocFileBody.append(classBody).append("\n");
 	}
 	modelsAggr.clear();

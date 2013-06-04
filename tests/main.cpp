@@ -46,11 +46,13 @@ SUITE(QemAgencyManager)
 
 	TEST(QemAgencyClear)
 	{
+		Qem::init();
 		CHECK(Qem::AgencyManager::empty());
 		Qem::ModelId id = Qem::TestData::createModel();
 		CHECK(!Qem::AgencyManager::empty());
 		Qem::TestData::destroyModel(id);
 		CHECK(Qem::AgencyManager::empty());
+		Qem::shutdown();
 	}
 
 }
@@ -60,25 +62,32 @@ SUITE(QemModel)
 
 	TEST(QemModelCreate)
 	{
+		Qem::init();
 		Qem::ModelId& id = Qem::TestData::createModel();
 		CHECK(id.isValid());
+		Qem::TestData::destroyModel(id);
+		Qem::shutdown();
 	}
 
 	TEST(QemModelDelete)
 	{
+		Qem::init();
 		Qem::ModelId& id = Qem::TestData::createModel();
 		CHECK(id.isValid());
 		Qem::TestData::destroyModel(id);
-
 		QEM_CHECK_ASSERT( Qem::TestData::Reader reader(id) );
+		Qem::shutdown();
 	}
 
 	TEST(QemModelId)
 	{
+		Qem::init();
 		for(unsigned int i = 1; i <= 10000; ++i)
 		{
 			QEM_CHECK_NO_ASSERT(Qem::TestData::createModel());
 		}
+		Qem::Agency<Qem::TestData>::clear(); // brutal clear of the agency
+		Qem::shutdown();
 	}
 
 }
@@ -87,16 +96,21 @@ SUITE(QemReadWrite)
 {
 	TEST(QemModelReadNotValid)
 	{
+		Qem::init();
 		Qem::ModelId& id = Qem::TestData::createModel();
 		CHECK(id.isValid());
 
 		Qem::TestData::Reader reader(id);
 
 		QEM_CHECK_ASSERT(reader.getId());
+		Qem::TestData::destroyModel(id);
+
+		Qem::shutdown();
 	}
 
 	TEST(QemModelReadWriteValid)
 	{
+		Qem::init();
 		Qem::ModelId& id = Qem::TestData::createModel();
 		CHECK(id.isValid());
 
@@ -106,6 +120,9 @@ SUITE(QemReadWrite)
 		Qem::TestData::Reader reader(id);
 
 		CHECK_EQUAL(reader.getId(), 42);
+		Qem::TestData::destroyModel(id);
+
+		Qem::shutdown();
 	}
 }
 
@@ -121,14 +138,23 @@ SUITE(QemAggregator)
 
 	TEST(QemAggregatorCreateReaders)
 	{
-		Qem::TestAggregator::Reader reader( Qem::TestAggregator::createModel() );
+		Qem::init();
+
+		Qem::ModelId& id = Qem::TestAggregator::createModel();
+		Qem::TestAggregator::Reader reader( id );
 		QEM_CHECK_NO_ASSERT( reader.getTestDataReader() );
 		QEM_CHECK_NO_ASSERT( reader.getTestDataBReader() );
+		Qem::TestAggregator::destroyModel( id );
+
+		Qem::shutdown();
 	}
 
 	TEST(QemAggregatorGetWritersReaders)
 	{
-		Qem::TestAggregator::Reader reader( Qem::TestAggregator::createModel() );
+		Qem::init();
+
+		Qem::ModelId& id = Qem::TestAggregator::createModel();
+		Qem::TestAggregator::Reader reader( id );
 
 		Qem::TestData::Writer writerData = reader.getTestDataWriter();
 		writerData.setId(42);
@@ -143,15 +169,37 @@ SUITE(QemAggregator)
 		CHECK_EQUAL( readerDataB.getId(), 666 );
 		writerDataB.setId(1024);
 		CHECK_EQUAL( readerDataB.getId(), 1024 );
+
+		Qem::TestAggregator::destroyModel( id );
+
+		Qem::shutdown();
 	}
 
 	TEST(QemAggregatorGetReadersAssert)
 	{
-		Qem::TestAggregator::Reader reader( Qem::TestAggregator::createModel() );
+		Qem::init();
+
+		Qem::ModelId& id = Qem::TestAggregator::createModel();
+
+		Qem::TestAggregator::Reader reader( id );
 		Qem::TestData::Reader readerData = reader.getTestDataReader();
 		QEM_CHECK_ASSERT( readerData.getBirthDate() );
 		Qem::TestDataB::Reader readerDataB = reader.getTestDataBReader();
 		QEM_CHECK_ASSERT( readerDataB.getName() );
+
+		Qem::TestAggregator::destroyModel( id );
+
+		Qem::shutdown();
+	}
+
+	TEST(QemAggregatorDelete)
+	{
+		Qem::init();
+
+		Qem::ModelId& id = Qem::TestAggregator::createModel();
+		Qem::TestAggregator::destroyModel(id);
+
+		Qem::shutdown();
 	}
 
 }

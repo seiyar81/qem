@@ -4,6 +4,7 @@
 #include <Qem/Qem>
 
 #include <QObject>
+#include <iostream>
 
 // QEM model fields
 QEM_MODEL_FIELD(int, int)

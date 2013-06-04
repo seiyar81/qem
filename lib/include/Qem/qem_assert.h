@@ -3,32 +3,35 @@
 
 #define QEM_ASSERT(X, M)	if(!(X)) { Qem::handleAssert(#X, M, __FILE__, __LINE__); }
 
+#include <Qem/qem.h>
 #include <sstream>
 
 namespace Qem
 {
 
-	void handleAssert(const char* expr, const char * message, const char * file, const int line);
+    QEM_EXPORT void handleAssert(const char* expr, const char * message, const char * file, const int line);
 
-	class AssertException
+	class QEM_EXPORT AssertException : public std::exception
 	{
 		public:
 			AssertException(const char* expr, const char * message, const char * file, const int line)
 				: expr(expr), message(message), file(file), line(line)
 			{
-			}
-
-			std::string what() const
-			{
-				std::string what = "AssertException thrown : " + message + " in " + file + " at line ";
+				m_what = "AssertException thrown : " + this->message + " in " + this->file + " at line ";
 
 				std::stringstream ss;
-				ss << what << line;
+				ss << m_what << this->line;
 
-				return ss.str();
+				m_what = ss.str();
+			}
+
+			const char * what() const throw()
+			{
+				return m_what.c_str();
 			}
 
 		private:
+			std::string m_what;
 			std::string expr;
 			std::string message;
 			std::string file;
