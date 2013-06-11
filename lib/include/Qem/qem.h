@@ -350,13 +350,13 @@ namespace Qem																				\
         #pragma warning(disable : 4251)
     #endif
 #else
-    #if __GNUC__ >= 4
+	#if __GNUC__ >= 4
         #define QEM_EXPORT __attribute__ ((__visibility__ ("default")))
         #define QEM_IMPORT __attribute__ ((__visibility__ ("default")))
-    #else
+	#else
         #define QEM_EXPORT
         #define QEM_IMPORT
-    #endif
+	#endif
 #endif
 
 namespace Qem

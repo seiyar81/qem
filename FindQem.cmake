@@ -18,7 +18,7 @@ find_path(QEM_INCLUDE_DIR Qem/Qem
 		  
 set(FIND_QEM_LIB_PATH
     ${QEM_ROOT}
-    $ENV{SFML_ROOT}
+	$ENV{QEM_ROOT}
     ~/Library/Frameworks
     /Library/Frameworks
     /usr/local
@@ -32,10 +32,38 @@ find_library(QEM_LIBRARY
                  NAMES qem
                  PATH_SUFFIXES lib64 lib
                  PATHS ${FIND_QEM_LIB_PATH})
-				 
+
+set(FIND_QEM_BIN_PATH
+	${QEM_ROOT}
+	$ENV{QEM_ROOT}
+	~/Library/Frameworks
+	/Library/Frameworks
+	/usr
+	/usr/local
+	/
+	/sw
+	/opt/local
+	/opt/csw
+	/opt)
+
 find_program(QEM_PREPROC_BIN
-             NAMES qemPreProc
+			 NAMES qemPreproc
 			 PATH_SUFFIXES bin
-             PATHS ${QEM_ROOT})
+			 PATHS ${FIND_QEM_BIN_PATH})
 			 
-set(QEM_CMAKE_FILE ${QEM_ROOT}/QemWrapCpp.cmake)
+set(FIND_QEM_FILE_PATH
+	${QEM_ROOT}
+	$ENV{QEM_ROOT}
+	${CMAKE_MODULE_PATH}
+	~/Library/Frameworks
+	/Library/Frameworks
+	/usr/local/cmake
+	/usr
+	/sw
+	/opt/local
+	/opt/csw
+	/opt)
+
+find_program(QEM_CMAKE_FILE
+			 NAMES QemWrapCpp.cmake
+			 PATHS ${FIND_QEM_FILE_PATH})
