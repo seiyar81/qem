@@ -107,6 +107,15 @@ It's easy to use :
 Always take three arguments : Model name, Member count, Members list
 Each model member is declarated by specifiying a name and a metatype as declared with the QEM_MODEL_FIELD macro..
 
+## Declare a model aggregator
+
+	QEM_MODEL_AGGREGATOR(ModelAggregator, 2,
+        	(TestModel),
+	        (TestModel2)
+	)
+        
+A model aggregator simply works as a proxy for managing multiple models.
+
 ## Qem in use
 
 Every proram using Qem should call Qem::init() before creating any models.
