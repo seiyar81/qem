@@ -21,6 +21,7 @@ namespace Qem
 			//-----------------------------------------------------------------------------
 			bool isValid() const;
 
+            ModelId& operator=(ModelId&);
 			ModelId& operator=(ModelId&&);
 
 			bool operator<(const ModelId & second) const;

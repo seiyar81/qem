@@ -283,7 +283,7 @@ namespace Qem																				\
 #define QEM_AGGREGATOR_INIT_MODEL_FIELD(ID, NAME)											\
 		m_modelDelegates.insert( std::make_pair( QEM_MODEL_STR(NAME),						\
 				std::make_pair( &NAME::createModel,											\
-						std::bind(NAME::destroyModel, _1) ) ) );							\
+                        std::bind(&NAME::destroyModel, _1) ) ) );							\
 
 #define QEM_AGGREGATOR_MODEL_FIELD_IMPL(ID, NAME)											\
 	public:																					\

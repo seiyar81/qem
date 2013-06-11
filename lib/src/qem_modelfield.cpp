@@ -39,12 +39,22 @@ namespace Qem
         return m_id != QEM_MODELID_INVALID;
 	}
 
+    ModelId& ModelId::operator=(ModelId& id)
+    {
+        if(&id != this)
+        {
+            this->m_id = id.m_id;
+        }
+        return *this;
+    }
+
 	ModelId& ModelId::operator=(ModelId&& id)
 	{
 		if(&id != this)
 		{
 			this->m_id = id.m_id;
 		}
+        return *this;
 	}
 
 	bool ModelId::operator<(const ModelId & second) const
