@@ -16,21 +16,20 @@ namespace Qem
             ModelId(const ModelId &);
 			ModelId(ModelId && id);
 
-			static Qem::ModelId random(const unsigned long & base = 0);
+			static Qem::ModelId random(const unsigned long & = 0);
 
-			//-----------------------------------------------------------------------------
 			bool isValid() const;
 
             ModelId& operator=(ModelId&);
 			ModelId& operator=(ModelId&&);
 
-			bool operator<(const ModelId & second) const;
+			bool operator<(const ModelId &) const;
 
-			bool operator>(const ModelId & second) const;
+			bool operator>(const ModelId &) const;
 
-			bool operator==(const ModelId & second) const;
+			bool operator==(const ModelId &) const;
 
-            bool operator!=(const ModelId & second) const;
+			bool operator!=(const ModelId &) const;
 
 		private:
 			unsigned long m_id;
@@ -41,10 +40,10 @@ namespace Qem
 	{
 		public:
 						ModelField();
-						ModelField(const T& value);
+						ModelField(const T&);
 
 			void		reset();
-			void		setValue(const T& value);
+			void		setValue(const T&);
 			bool		isValid() const;
 			bool		isUpdated() const;
 			const T&	value() const;

@@ -21,7 +21,7 @@ namespace Qem																				\
 	private:																				\
 																							\
 		friend class Qem::Agency<NAME>;														\
-		explicit NAME()	: QObject()															\
+		explicit NAME( Qem::ModelId id ) : QObject(), m_modelId(id)							\
 		{}																					\
 		~NAME()																				\
 		{}																					\
@@ -99,7 +99,7 @@ namespace Qem																				\
 	private:																				\
 																							\
 		friend class Qem::AggregatorAgency<NAME>;											\
-		explicit NAME()	: QObject()															\
+	explicit NAME( Qem::ModelId id ) : QObject(), m_modelId(id)								\
 		{																					\
 			this->initAggregates();															\
 		}																					\

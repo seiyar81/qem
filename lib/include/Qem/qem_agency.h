@@ -56,8 +56,7 @@ namespace Qem
 			}
 			Qem::ModelId& createModel()
 			{
-				T* model = new T();
-				model->m_modelId = Qem::ModelId::random(++m_nextId);
+				T* model = new T(Qem::ModelId::random(++m_nextId));
 				QEM_ASSERT(m_models.find(model->m_modelId) == m_models.end(), "Cannot create model, ID is already registered");
 				m_models.insert( std::make_pair(model->m_modelId, model) );
 				return model->m_modelId;
@@ -144,8 +143,7 @@ namespace Qem
 			}
 			Qem::ModelId& createModel()
 			{
-				T* model = new T();
-				model->m_modelId = Qem::ModelId::random(++m_nextId);
+				T* model = new T(Qem::ModelId::random(++m_nextId));
 				QEM_ASSERT(m_models.find(model->m_modelId) == m_models.end(), "Cannot create model, ID is already registered");
 				m_models.insert( std::make_pair(model->m_modelId, model) );
 				return model->m_modelId;
