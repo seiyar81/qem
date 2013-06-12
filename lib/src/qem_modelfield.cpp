@@ -15,10 +15,6 @@ namespace Qem
     ModelId::ModelId(const ModelId & id): m_id(id.m_id)
     {
     }
-	ModelId::ModelId(ModelId && id)
-	{
-		m_id = id.m_id;
-	}
 	//-----------------------------------------------------------------------------
 	Qem::ModelId ModelId::random(const unsigned long & base)
 	{

@@ -93,11 +93,9 @@ namespace Qem
 
 			void clearModels()
 			{
-				typename std::map<Qem::ModelId, T*>::iterator it(m_models.begin());
-				while(it != m_models.end())
+				for(const auto& it : m_models)
 				{
-					delete (*it).second;
-					++it;
+					delete it.second;
 				}
 				m_models.clear();
 				Agency<T>::m_instance = 0;
@@ -113,7 +111,7 @@ namespace Qem
 			{
 				QEM_ASSERT(m_instance, "Cannot access agency, no model registered");
 				QEM_ASSERT(m_instance->m_models.find(id) != m_instance->m_models.end(), "Cannot find model, ID is not registered");
-				return (*m_instance->m_models.find(id)).second;
+				return (m_instance->m_models.find(id))->second;
 			}
 
 			static Agency*							m_instance;
@@ -179,10 +177,9 @@ namespace Qem
 
 			void clearModels()
 			{
-				typename std::map<Qem::ModelId, T*>::iterator it(m_models.begin());
-				while(it != m_models.end())
+				for(const auto& it : m_models)
 				{
-					delete (*it).second;
+					delete it.second;
 					++it;
 				}
 				m_models.clear();
@@ -199,7 +196,7 @@ namespace Qem
 			{
 				QEM_ASSERT(m_instance, "Cannot access agency, no model registered");
 				QEM_ASSERT(m_instance->m_models.find(id) != m_instance->m_models.end(), "Cannot find model, ID is not registered");
-				return (*m_instance->m_models.find(id)).second;
+				return (m_instance->m_models.find(id))->second;
 			}
 
 			static AggregatorAgency*				m_instance;

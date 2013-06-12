@@ -6,6 +6,8 @@ int main(int argc, char* argv[])
 
     Qem::init();
 
+	qDebug() << "Qem::init() ok";
+
 	Qem::ModelId& id = Qem::TestAggregator::createModel();
 
 	Qem::TestAggregator::Reader reader( id );
@@ -27,6 +29,8 @@ int main(int argc, char* argv[])
 	Qem::TestAggregator::destroyModel( id );
 
     Qem::shutdown();
+
+	qDebug() << "Qem::shutdown() ok";
 
 	delete w;
 

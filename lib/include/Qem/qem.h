@@ -7,7 +7,7 @@
 #define QEM_MODEL_CLASS_HEADER(NAME)														\
 namespace Qem																				\
 {																							\
-	class NAME	: public QObject															\
+	class QEM_EXPORT NAME	: public QObject															\
 	{																						\
 		Q_OBJECT																			\
 	public:																					\
@@ -83,10 +83,10 @@ namespace Qem																				\
 	};																						\
 
 
-#define QEM_MODEL_AGGREGATOR_CLASS_HEADER(NAME)												\
+#define QEM_MODEL_AGGREGATOR_CLASS_HEADER(NAME, N)												\
 namespace Qem																				\
 {																							\
-	class NAME	: public QObject															\
+	class QEM_EXPORT NAME	: public QObject															\
 	{																						\
 		Q_OBJECT																			\
 	public:																					\
@@ -105,7 +105,6 @@ namespace Qem																				\
 		}																					\
 		~NAME()                         													\
         {																					\
-			this->deleteAggregates();														\
         }																					\
 																							\
 		Qem::ModelId& getModelId( const char * name )										\
@@ -114,20 +113,20 @@ namespace Qem																				\
 		}																					\
 																							\
 		Qem::ModelId							m_modelId;									\
-		std::map< const char *,																\
+		std::map< std::string,																\
 			std::pair< std::function<Qem::ModelId &()>,										\
 						std::function<void(const Qem::ModelId &)> > >						\
 				m_modelDelegates;															\
-		std::map< const char *, Qem::ModelId >	m_modelsId;									\
+		std::map< std::string, Qem::ModelId >	m_modelsId;									\
                                                                                             \
         void deleteAggregates()																\
         {																					\
             for(const auto& i : m_modelDelegates)											\
             {																				\
                 i.second.second( m_modelsId[ i.first ] );                                   \
-            }                                                                               \
-            m_modelsId.clear();                                                             \
-            m_modelDelegates.clear();                                                       \
+			}                                                                               \
+			m_modelDelegates.clear();														\
+			m_modelsId.clear();																\
         }                                                                                   \
 		void initAggregates()																\
 		{																					\
@@ -332,7 +331,7 @@ namespace Qem																				\
 	QEM_MODEL_COMPLETION(__VA_ARGS__)
 //----------------------------------------------------------------------------------------
 #define QEM_MODEL_AGGREGATOR_COMPLETION(NAME, N, ...)										\
-	QEM_MODEL_AGGREGATOR_CLASS_HEADER(NAME)													\
+	QEM_MODEL_AGGREGATOR_CLASS_HEADER(NAME, N)													\
 	PP_CAT(PP_RECURSIVE_IMPL, N)(QEM_AGGREGATOR_INIT_MODEL_FIELD, __VA_ARGS__)				\
 	QEM_MODEL_AGGREGATOR_READER(NAME)														\
 	PP_CAT(PP_RECURSIVE_IMPL, N)(QEM_AGGREGATOR_MODEL_FIELD_IMPL, __VA_ARGS__)				\

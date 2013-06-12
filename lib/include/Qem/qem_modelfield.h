@@ -14,7 +14,6 @@ namespace Qem
 			ModelId();
             ModelId(const unsigned long &);
             ModelId(const ModelId &);
-			ModelId(ModelId && id);
 
 			static Qem::ModelId random(const unsigned long & = 0);
 
