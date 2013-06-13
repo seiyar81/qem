@@ -13,14 +13,10 @@ namespace Qem
 		public:
 			ModelId();
             ModelId(const unsigned long &);
-            ModelId(const ModelId &);
 
-			static Qem::ModelId random(const unsigned long & = 0);
+			static const unsigned long random(const unsigned long & = 0);
 
 			bool isValid() const;
-
-            ModelId& operator=(ModelId&);
-			ModelId& operator=(ModelId&&);
 
 			bool operator<(const ModelId &) const;
 

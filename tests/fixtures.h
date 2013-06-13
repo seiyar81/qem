@@ -24,8 +24,8 @@ QEM_MODEL(TestData, 3,
 
 QEM_MODEL(TestDataB, 3,
 	(Id,		int),
-    (Name,		qString),
-    (Notes,     vectorInt)
+	(Name,		qString),
+	(Notes,		vectorInt)
 )
 
 QEM_MODEL_AGGREGATOR(TestAggregator, 2,

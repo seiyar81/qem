@@ -22,13 +22,13 @@ namespace Qem
 		return (m_runningAgencies.empty());
 	}
 
-	void AgencyManager::registerAgency(const Qem::ModelId & id)
+	void AgencyManager::registerAgency(Qem::ModelId id)
 	{
 		QEM_ASSERT(m_runningAgencies.find(id) == m_runningAgencies.end(), "Agency already registered");
 		m_runningAgencies.insert(id);
 	}
 
-	void AgencyManager::unregisterAgency(const Qem::ModelId & id)
+	void AgencyManager::unregisterAgency(Qem::ModelId id)
 	{
 		QEM_ASSERT(m_runningAgencies.find(id) != m_runningAgencies.end(), "Agency not registered");
 		m_runningAgencies.erase(m_runningAgencies.find(id));

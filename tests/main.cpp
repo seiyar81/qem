@@ -82,7 +82,7 @@ SUITE(QemModel)
 	TEST(QemModelId)
 	{
 		Qem::init();
-		for(unsigned int i = 1; i <= 10000; ++i)
+		for(unsigned int i = 1; i <= 100000; ++i)
 		{
 			QEM_CHECK_NO_ASSERT(Qem::TestData::createModel());
 		}

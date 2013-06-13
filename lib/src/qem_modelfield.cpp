@@ -2,6 +2,7 @@
 #include "Qem/qem_assert.h"
 
 #include <cstdlib>
+#include <iostream>
 
 namespace Qem
 {
@@ -12,11 +13,9 @@ namespace Qem
 	ModelId::ModelId(const unsigned long & id): m_id(id)
 	{
 	}
-    ModelId::ModelId(const ModelId & id): m_id(id.m_id)
-    {
-    }
 	//-----------------------------------------------------------------------------
-	Qem::ModelId ModelId::random(const unsigned long & base)
+
+	const unsigned long ModelId::random(const unsigned long & base)
 	{
 		unsigned long r = 0;
 		for (unsigned int i = 0; i < sizeof(unsigned long)/sizeof(int); i++)
@@ -27,30 +26,12 @@ namespace Qem
 			r *= base;
 			#endif
 		}
-		return Qem::ModelId(r);
+		return r;
 	}
 	//-----------------------------------------------------------------------------
 	bool ModelId::isValid() const
 	{
         return m_id != QEM_MODELID_INVALID;
-	}
-
-    ModelId& ModelId::operator=(ModelId& id)
-    {
-        if(&id != this)
-        {
-            this->m_id = id.m_id;
-        }
-        return *this;
-    }
-
-	ModelId& ModelId::operator=(ModelId&& id)
-	{
-		if(&id != this)
-		{
-			this->m_id = id.m_id;
-		}
-        return *this;
 	}
 
 	bool ModelId::operator<(const ModelId & second) const

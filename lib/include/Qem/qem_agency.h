@@ -31,9 +31,9 @@ namespace Qem
 			template<typename T>
 			friend class AggregatorAgency;
 
-			static void registerAgency( const Qem::ModelId & );
+			static void registerAgency( Qem::ModelId );
 
-			static void unregisterAgency( const Qem::ModelId & );
+			static void unregisterAgency( Qem::ModelId );
 
 			static std::set< Qem::ModelId > m_runningAgencies;
 	};
